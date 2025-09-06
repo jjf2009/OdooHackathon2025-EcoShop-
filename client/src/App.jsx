@@ -1,12 +1,9 @@
-import Login from './pages/auth/Login'
-import Register from './pages/auth/Register'
-
-import Navbar from './components/Navbar'
+import LandingPage from "./pages/store/LandingPage"
 
 function App() {
   return (
     <>
-      <Navbar />
+      <LandingPage />
     </>
   )
 }
