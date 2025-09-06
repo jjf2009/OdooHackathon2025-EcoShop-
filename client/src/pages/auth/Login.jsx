@@ -1,54 +1,83 @@
-import Logo from "../../assets/react.svg";
+import CommonForm from "@/components/common/form";
+import { useToast } from "@/components/ui/use-toast";
+import { loginFormControls } from "@/config";
+import { loginUser } from "@/store/auth-slice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { Leaf } from "lucide-react"; // Using a leaf icon from lucide-react
 
-function Login() {
+const initialState = {
+  email: "",
+  password: "",
+};
+
+const loginValidationRules = {
+  email: {
+    required: true,
+    regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: "Please enter a valid email address.",
+  },
+  password: {
+    required: true,
+    regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    message: "Password must be at least 8 characters, include uppercase, lowercase, number, and a special character.",
+  },
+};
+
+
+function AuthLogin() {
+  const [formData, setFormData] = useState(initialState);
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+
+  function onSubmit(event) {
+    event.preventDefault();
+
+    dispatch(loginUser(formData)).then((data) => {
+      if (data?.payload?.success) {
+        toast({
+          title: data?.payload?.message,
+        });
+      } else {
+        toast({
+          title: data?.payload?.message,
+          variant: "destructive",
+        });
+      }
+    });
+  }
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-purple-900 p-4">
-      <div className="w-full max-w-md bg-black/40 backdrop-blur-md rounded-2xl shadow-xl p-8">
-        {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center">
-            <img src={Logo} alt="React logo" className="w-12 h-12" />
-          </div>
+    <div className="mx-auto w-full max-w-md space-y-6">
+      <div className="text-center flex flex-col items-center">
+        {/* Eco-themed logo/icon */}
+        <div className="p-3 bg-lime-50 rounded-full mb-4">
+          <Leaf className="h-12 w-12 text-lime-700" />
         </div>
-
-        {/* Title */}
-        <h1 className="text-center text-2xl font-semibold text-white mb-6">
-          Login Page
+        <h1 className="text-3xl font-bold tracking-tight text-lime-900">
+          Welcome back to EcoShop
         </h1>
-
-        {/* Form */}
-        <form className="space-y-5">
-          {/* Email */}
-          <div>
-            <label className="block text-gray-300 mb-2">Email / Username</label>
-            <input
-              type="text"
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-gray-300 mb-2">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
-
-          {/* Button */}
-          <button
-            type="submit"
-            className="w-full py-2 rounded-lg bg-purple-600 text-white font-semibold hover:bg-purple-700 transition duration-200"
+        <p className="mt-2 text-lime-800">
+          Give pre-loved items a new life.
+          <Link
+            className="font-medium ml-2 text-lime-700 hover:text-lime-900 transition-colors"
+            to="/auth/register"
           >
-            Login
-          </button>
-        </form>
+            Register
+          </Link>
+        </p>
       </div>
+       <CommonForm
+    formControls={loginFormControls}
+    buttonText={"Sign In"}
+    formData={formData}
+    setFormData={setFormData}
+    onSubmit={onSubmit}
+    validationRules={loginValidationRules}
+  />
     </div>
   );
 }
 
-export default Login;
+export default AuthLogin;
